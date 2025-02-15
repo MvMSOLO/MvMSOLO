@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MvMSOLO - AI Powered Site</title>
+    <title>MvMSOLO - Official AI Site</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(45deg, #141e30, #243b55);
+            background: linear-gradient(45deg, #0f0c29, #302b63, #24243e);
             color: white;
             text-align: center;
             margin: 0;
@@ -31,8 +31,8 @@
             font-size: 18px;
             margin-top: 10px;
         }
-        #subscribers, #liveViews, #popularVideo, #shortsVideo, #timeNow {
-            font-size: 20px;
+        #subscribers, #liveViews, #channelViews, #videoCount, #popularVideo {
+            font-size: 24px;
             font-weight: bold;
             margin-top: 10px;
         }
@@ -40,7 +40,7 @@
 </head>
 <body>
 
-    <h1>🎮 Welcome to MvMSOLO Official Site 🎮</h1>
+    <h1>🎮 Welcome to MvMSOLO Official AI Site 🎮</h1>
     
     <div class="container">
         <h2>📢 My Goal: 1 Million Subscribers</h2>
@@ -49,23 +49,19 @@
         <div id="subscribers">Loading...</div>
         <p>Live Viewers:</p>
         <div id="liveViews">Loading...</div>
+        <p>Total Channel Views:</p>
+        <div id="channelViews">Loading...</div>
+        <p>Total Videos:</p>
+        <div id="videoCount">Loading...</div>
+        <p>Most Popular Video:</p>
+        <div id="popularVideo">Loading...</div>
 
         <button class="btn" onclick="window.location.href='https://www.youtube.com/@MvMSOLO'">Subscribe Now</button>
     </div>
 
     <div class="container">
-        <h2>🔥 Most Popular Video</h2>
-        <div id="popularVideo">Loading...</div>
-    </div>
-
-    <div class="container">
-        <h2>📢 Latest Shorts</h2>
-        <div id="shortsVideo">Loading...</div>
-    </div>
-
-    <div class="container">
-        <h2>🕰 Current Time</h2>
-        <div id="timeNow">Loading...</div>
+        <h2>🎬 Latest Live Stream</h2>
+        <div id="liveVideo">Loading...</div>
     </div>
 
     <script>
@@ -78,44 +74,62 @@
                 let response = await fetch(url);
                 let data = await response.json();
                 document.getElementById("subscribers").innerText = data.items[0].statistics.subscriberCount + " Subscribers";
+                document.getElementById("channelViews").innerText = data.items[0].statistics.viewCount + " Views";
+                document.getElementById("videoCount").innerText = data.items[0].statistics.videoCount + " Videos";
             } catch (error) {
                 document.getElementById("subscribers").innerText = "Failed to load";
             }
         }
 
+        async function getLatestLiveStream() {
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${UCFrmniXG_EnNC8006SV8UhQ}&type=video&eventType=live&maxResults=1&key=${AIzaSyAMItX7n3RChN1Tv-GvtnDU497Wd7hLtbc}`;
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                if (data.items.length > 0) {
+                    let videoId = data.items[0].id.videoId;
+                    document.getElementById("liveVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                    getLiveViews(videoId);
+                } else {
+                    document.getElementById("liveVideo").innerText = "No live stream currently.";
+                    document.getElementById("liveViews").innerText = "N/A";
+                }
+            } catch (error) {
+                document.getElementById("liveVideo").innerText = "Failed to load live stream.";
+                document.getElementById("liveViews").innerText = "N/A";
+            }
+        }
+
+        async function getLiveViews(videoId) {
+            const url = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${AIzaSyAMItX7n3RChN1Tv-GvtnDU497Wd7hLtbc}`;
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                document.getElementById("liveViews").innerText = data.items[0].liveStreamingDetails.concurrentViewers + " Live Viewers";
+            } catch (error) {
+                document.getElementById("liveViews").innerText = "N/A";
+            }
+        }
+
         async function getPopularVideo() {
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=1&order=viewCount&type=video&key=${API_KEY}`;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CUCFrmniXG_EnNC8006SV8UhQ}&order=viewCount&type=video&maxResults=1&key=${AIzaSyAMItX7n3RChN1Tv-GvtnDU497Wd7hLtbc}`;
             try {
                 let response = await fetch(url);
                 let data = await response.json();
-                let videoId = data.items[0].id.videoId;
-                document.getElementById("popularVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                if (data.items.length > 0) {
+                    let videoId = data.items[0].id.videoId;
+                    document.getElementById("popularVideo").innerHTML = `<a href="https://www.youtube.com/watch?v=${videoId}" target="_blank">Watch Most Popular Video</a>`;
+                } else {
+                    document.getElementById("popularVideo").innerText = "No Data";
+                }
             } catch (error) {
-                document.getElementById("popularVideo").innerText = "Failed to load.";
+                document.getElementById("popularVideo").innerText = "Failed to load";
             }
         }
 
-        async function getShortsVideo() {
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=1&order=date&type=video&key=${API_KEY}`;
-            try {
-                let response = await fetch(url);
-                let data = await response.json();
-                let videoId = data.items[0].id.videoId;
-                document.getElementById("shortsVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-            } catch (error) {
-                document.getElementById("shortsVideo").innerText = "Failed to load.";
-            }
-        }
-
-        function updateTime() {
-            let now = new Date();
-            document.getElementById("timeNow").innerText = now.toLocaleTimeString();
-        }
-
-        setInterval(updateTime, 1000);
         getSubscribers();
+        getLatestLiveStream();
         getPopularVideo();
-        getShortsVideo();
     </script>
 
 </body>
