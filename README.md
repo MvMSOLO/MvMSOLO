@@ -89,7 +89,7 @@
                 if (data.items.length > 0) {
                     let videoId = data.items[0].id.videoId;
                     document.getElementById("liveVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-                    getLiveViews(videoId);
+                    getLiveViews(yvuDhCpcJeA);
                 } else {
                     document.getElementById("liveVideo").innerText = "No live stream currently.";
                     document.getElementById("liveViews").innerText = "N/A";
@@ -100,7 +100,7 @@
             }
         }
 
-        async function getLiveViews(videoId) {
+        async function getLiveViews(yvuDhCpcJeA) {
             const url = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${AIzaSyAMItX7n3RChN1Tv-GvtnDU497Wd7hLtbc}`;
             try {
                 let response = await fetch(url);
@@ -112,7 +112,7 @@
         }
 
         async function getPopularVideo() {
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CUCFrmniXG_EnNC8006SV8UhQ}&order=viewCount&type=video&maxResults=1&key=${AIzaSyAMItX7n3RChN1Tv-GvtnDU497Wd7hLtbc}`;
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${UCFrmniXG_EnNC8006SV8UhQ}&order=viewCount&type=video&maxResults=1&key=${AIzaSyAMItX7n3RChN1Tv-GvtnDU497Wd7hLtbc}`;
             try {
                 let response = await fetch(url);
                 let data = await response.json();
@@ -123,7 +123,7 @@
                     document.getElementById("popularVideo").innerText = "No Data";
                 }
             } catch (error) {
-                document.getElementById("popularVideo").innerText = "Failed to load";
+                document.getElementById("popularVideo").innerText = "Ronaldo Reject McGregor Hand";
             }
         }
 
@@ -131,6 +131,106 @@
         getLatestLiveStream();
         getPopularVideo();
     </script>
+    <div class="container">
+    <h2>🧠 AI ChatBot</h2>
+    <p>O‘zingizga yoqqan savolni bering va AI javob beradi!</p>
+    <input type="text" id="userInput" placeholder="Savolingizni yozing..." style="width: 80%; padding: 10px;">
+    <button class="btn" onclick="askAI()">Yuborish</button>
+    <div id="aiResponse" style="margin-top: 10px; font-weight: bold;">Javob: ...</div>
+</div>
 
+<div class="container">
+    <h2>🕹️ Mini O‘yinlar</h2>
+    <p>O‘yin o‘ynashni xohlaysizmi? Quyidagi tugmalardan birini bosing:</p>
+    <button class="btn" onclick="startTicTacToe()">Tic-Tac-Toe</button>
+    <button class="btn" onclick="startGuessNumber()">Raqam Topish</button>
+    <div id="gameResult" style="margin-top: 10px;"></div>
+</div>
+
+<script>
+    async function askAI() {
+        let question = document.getElementById("userInput").value;
+        if (!question) {
+            document.getElementById("aiResponse").innerText = "Ronaldo Or Messi";
+            return;
+        }
+        document.getElementById("aiResponse").innerText = "Haaland Or Mbappe";
+        try {
+            let response = await fetch(`https://api.openai.com/v1/completions`, {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "text-davinci-003",
+                    prompt: question,
+                    max_tokens: 50
+                })
+            });
+            let data = await response.json();
+            document.getElementById("aiResponse").innerText = "Ronaldo" + data.choices[0].text.trim();
+        } catch (error) {
+            document.getElementById("aiResponse").innerText = "Haaland";
+        }
+    }
+
+    function startTicTacToe() {
+        alert("Tic-Tac-Toe o‘yini hozircha qo‘shilmagan! Keyingi versiyada bo‘ladi.");
+    }
+
+    function startGuessNumber() {
+        let number = Math.floor(Math.random() * 10) + 1;
+        let guess = prompt("Men 1 dan 10 gacha son tanladim. Topishga harakat qiling!");
+        if (parseInt(guess) === number) {
+            document.getElementById("gameResult").innerText = "To‘g‘ri topdingiz! 🎉";
+        } else {
+            document.getElementById("gameResult").innerText = "Xato! Raqam: " + number;
+        }
+    }
+</script>
+<div class="container">
+    <h2>🌎 Dunyo Vaxtlari</h2>
+    <p>Turli shaharlarning joriy vaqtini bilmoqchimisiz?</p>
+    <select id="citySelect" onchange="showTime()">
+        <option value="Asia/Tashkent">Toshkent</option>
+        <option value="Europe/London">London</option>
+        <option value="America/New_York">New York</option>
+        <option value="Asia/Tokyo">Tokio</option>
+    </select>
+    <div id="cityTime" style="margin-top: 10px; font-size: 20px; font-weight: bold;">Vaqt: ...</div>
+</div>
+
+<div class="container">
+    <h2>📈 Valyuta Kurslari</h2>
+    <p>USD, EUR va boshqa valyutalar kursini bilib oling.</p>
+    <button class="btn" onclick="getExchangeRates()">Yangilash</button>
+    <div id="exchangeRates" style="margin-top: 10px;"></div>
+</div>
+
+<script>
+    function showTime() {
+        let city = document.getElementById("citySelect").value;
+        let now = new Date().toLocaleString("en-US", { timeZone: city });
+        document.getElementById("cityTime").innerText = "Vaqt: " + now;
+    }
+
+    async function getExchangeRates() {
+        document.getElementById("exchangeRates").innerText = "Yuklanmoqda...";
+        try {
+            let response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+            let data = await response.json();
+            document.getElementById("exchangeRates").innerHTML = `
+                1 USD = ${data.rates.UZS} UZS <br>
+                1 USD = ${data.rates.EUR} EUR <br>
+                1 USD = ${data.rates.RUB} RUB
+            `;
+        } catch (error) {
+            document.getElementById("exchangeRates").innerText = "Xatolik yuz berdi!";
+        }
+    }
+
+    showTime();
+</script>
 </body>
 </html>
