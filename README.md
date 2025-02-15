@@ -15,52 +15,26 @@
             transition: background 0.5s;
         }
         .container {
-            max-width: 90%;
+            max-width: 900px;
             margin: 20px auto;
-            padding: 15px;
+            padding: 20px;
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
-            box-sizing: border-box;
         }
         .btn {
             background-color: #ff0000;
-            padding: 10px 15px;
+            padding: 10px;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
             margin-top: 10px;
         }
         #subscribers, #liveViews {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             margin-top: 10px;
-        }
-        #fact {
-            font-style: italic;
-            margin-top: 10px;
-        }
-        iframe {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9;
-            border-radius: 5px;
-        }
-        .dark-mode {
-            background: linear-gradient(45deg, #000000, #222222);
-        }
-        @media (max-width: 600px) {
-            .btn {
-                font-size: 14px;
-                padding: 8px 12px;
-            }
-            #subscribers, #liveViews {
-                font-size: 18px;
-            }
-            .container {
-                padding: 10px;
-            }
         }
     </style>
 </head>
@@ -69,9 +43,6 @@
     <h1>🎮 Welcome to MvMSOLO Official Site 🎮</h1>
     
     <div class="container">
-        <h2>🔥 My Most Popular Video</h2>
-        <iframe src="https://www.youtube.com/embed/yvuDhCpcJeA" frameborder="0" allowfullscreen></iframe>
-
         <h2>📢 My Goal: 1 Million Subscribers</h2>
         <p>Subscribe to my channel and help me reach my dream! 🎯</p>
         <p>Current Subscribers:</p>
@@ -83,61 +54,57 @@
     </div>
 
     <div class="container">
-        <h2>⚽ Random Football Fact</h2>
-        <p id="fact">Loading...</p>
-        <button class="btn" onclick="randomFact()">🔄 Refresh Fact</button>
+        <h2>🎬 Latest Live Stream</h2>
+        <div id="liveVideo">Loading...</div>
     </div>
-
-    <div class="container">
-        <h2>🎬 Latest Video</h2>
-        <div id="latestVideo">Loading...</div>
-    </div>
-
-    <div class="container">
-        <h2>🌍 Weather Update</h2>
-        <div id="weather">Loading...</div>
-    </div>
-
-    <div class="container">
-        <h2>📝 Leave a Comment</h2>
-        <textarea id="commentBox" rows="4" cols="50" placeholder="Write your comment..."></textarea>
-        <br>
-        <button class="btn" onclick="alert('Comment submitted!')">Submit</button>
-    </div>
-
-    <div class="container">
-        <h2>⏳ Next Giveaway Countdown</h2>
-        <div id="countdown">Loading...</div>
-    </div>
-
-    <button class="btn" onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
 
     <script>
-        function randomFact() {
-            const facts = [
-                "Cristiano Ronaldo is the only player to win league titles in England, Spain, and Italy.",
-                "Lionel Messi has the most Ballon d'Or wins in history.",
-                "The fastest goal in World Cup history was scored in 10.8 seconds.",
-                "Real Madrid has won the most Champions League titles.",
-                "A goalkeeper once scored a goal from 101 meters away."
-            ];
-            document.getElementById("fact").innerText = facts[Math.floor(Math.random() * facts.length)];
+        const API_KEY = "SIZNING_YOUTUBE_API_KEY";
+        const CHANNEL_ID = "UCFrmniXG_EnNC8006SV8UhQ";
+
+        async function getSubscribers() {
+            const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`;
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                document.getElementById("subscribers").innerText = data.items[0].statistics.subscriberCount + " Subscribers";
+            } catch (error) {
+                document.getElementById("subscribers").innerText = "Failed to load";
+            }
         }
 
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
+        async function getLatestLiveStream() {
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&type=video&eventType=live&maxResults=1&key=${API_KEY}`;
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                if (data.items.length > 0) {
+                    let videoId = data.items[0].id.videoId;
+                    document.getElementById("liveVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                    getLiveViews(videoId);
+                } else {
+                    document.getElementById("liveVideo").innerText = "No live stream currently.";
+                    document.getElementById("liveViews").innerText = "N/A";
+                }
+            } catch (error) {
+                document.getElementById("liveVideo").innerText = "Failed to load live stream.";
+                document.getElementById("liveViews").innerText = "N/A";
+            }
         }
 
-        function updateCountdown() {
-            const giveawayDate = new Date("2025-03-01T00:00:00");
-            const now = new Date();
-            const diff = giveawayDate - now;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById("countdown").innerText = `${days} days left!`;
+        async function getLiveViews(videoId) {
+            const url = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${API_KEY}`;
+            try {
+                let response = await fetch(url);
+                let data = await response.json();
+                document.getElementById("liveViews").innerText = data.items[0].liveStreamingDetails.concurrentViewers + " Live Viewers";
+            } catch (error) {
+                document.getElementById("liveViews").innerText = "N/A";
+            }
         }
 
-        updateCountdown();
-        randomFact();
+        getSubscribers();
+        getLatestLiveStream();
     </script>
 
 </body>
