@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MvMSOLO - Official Site</title>
+    <title>MvMSOLO - AI Powered Site</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,8 +31,8 @@
             font-size: 18px;
             margin-top: 10px;
         }
-        #subscribers, #liveViews {
-            font-size: 24px;
+        #subscribers, #liveViews, #popularVideo, #shortsVideo, #timeNow {
+            font-size: 20px;
             font-weight: bold;
             margin-top: 10px;
         }
@@ -54,8 +54,18 @@
     </div>
 
     <div class="container">
-        <h2>🎬 Latest Live Stream</h2>
-        <div id="liveVideo">Loading...</div>
+        <h2>🔥 Most Popular Video</h2>
+        <div id="popularVideo">Loading...</div>
+    </div>
+
+    <div class="container">
+        <h2>📢 Latest Shorts</h2>
+        <div id="shortsVideo">Loading...</div>
+    </div>
+
+    <div class="container">
+        <h2>🕰 Current Time</h2>
+        <div id="timeNow">Loading...</div>
     </div>
 
     <script>
@@ -73,38 +83,39 @@
             }
         }
 
-        async function getLatestLiveStream() {
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&type=video&eventType=live&maxResults=1&key=${API_KEY}`;
+        async function getPopularVideo() {
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=1&order=viewCount&type=video&key=${API_KEY}`;
             try {
                 let response = await fetch(url);
                 let data = await response.json();
-                if (data.items.length > 0) {
-                    let videoId = data.items[0].id.videoId;
-                    document.getElementById("liveVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
-                    getLiveViews(videoId);
-                } else {
-                    document.getElementById("liveVideo").innerText = "No live stream currently.";
-                    document.getElementById("liveViews").innerText = "N/A";
-                }
+                let videoId = data.items[0].id.videoId;
+                document.getElementById("popularVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
             } catch (error) {
-                document.getElementById("liveVideo").innerText = "Failed to load live stream.";
-                document.getElementById("liveViews").innerText = "N/A";
+                document.getElementById("popularVideo").innerText = "Failed to load.";
             }
         }
 
-        async function getLiveViews(videoId) {
-            const url = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${API_KEY}`;
+        async function getShortsVideo() {
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&maxResults=1&order=date&type=video&key=${API_KEY}`;
             try {
                 let response = await fetch(url);
                 let data = await response.json();
-                document.getElementById("liveViews").innerText = data.items[0].liveStreamingDetails.concurrentViewers + " Live Viewers";
+                let videoId = data.items[0].id.videoId;
+                document.getElementById("shortsVideo").innerHTML = `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
             } catch (error) {
-                document.getElementById("liveViews").innerText = "N/A";
+                document.getElementById("shortsVideo").innerText = "Failed to load.";
             }
         }
 
+        function updateTime() {
+            let now = new Date();
+            document.getElementById("timeNow").innerText = now.toLocaleTimeString();
+        }
+
+        setInterval(updateTime, 1000);
         getSubscribers();
-        getLatestLiveStream();
+        getPopularVideo();
+        getShortsVideo();
     </script>
 
 </body>
